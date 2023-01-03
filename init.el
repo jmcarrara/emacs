@@ -8,12 +8,6 @@
 ;;Basic config
 ;;###############
 
-;;Definindo impressora PostScript padrão.
-(defvar ps-printer-name "//NOTEMAUR/cp1215")
-
-;;Definindo impressora padrão.
-(defvar printer-name "//NOTEMAUR/cp1215")
-
 ;;Configura fonte
 (set-frame-font "Consolas-9")
 
@@ -77,7 +71,7 @@
 
 ;;ERC
 (defvar erc-server "irc.libera.chat")
-(defvar erc-nick "mauricioc")
+(defvar erc-nick "USERNAME-HERE")
 ;;(defvar erc-user-full-name "Name here")
 (defvar erc-track-shorten-start 10) ;;Enlarge channel name space in mode line
 (defvar erc-autojoin-channels-alist '(("libera.chat"
