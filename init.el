@@ -9,13 +9,7 @@
 ;;###############
 
 ;;Configura fonte
-(set-frame-font "Consolas-9")
-
-;;Definir ecoding para UTF-8
-(prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-language-environment 'utf-8)
-(set-selection-coding-system 'utf-16-le) ;;utf-16-le para copiar do clipboard no Windows, se não utf-8.
+(set-frame-font "FiraCode-10")
 
 ;;Maximized startup
 (toggle-frame-maximized)
@@ -71,7 +65,7 @@
 
 ;;ERC
 (defvar erc-server "irc.libera.chat")
-(defvar erc-nick "USERNAME-HERE")
+(defvar erc-nick "mauricioc")
 ;;(defvar erc-user-full-name "Name here")
 (defvar erc-track-shorten-start 10) ;;Enlarge channel name space in mode line
 (defvar erc-autojoin-channels-alist '(("libera.chat"
@@ -111,36 +105,11 @@
   (other-window 1))
 (global-set-key (kbd "C-x 3") 'split-and-follow-verticaly)
 
-(defun elfeed-play-with-mpv ()
-  "Play entry link with mpv."
+(defun toogle-font-size ()
+  "Alterna entre 2 tamanho de fontes pré determinados."
   (interactive)
-  (let ((entry (if (eq major-mode 'elfeed-show-mode) elfeed-show-entry (elfeed-search-selected :single)))
-        (quality-arg "")
-        (quality-val (completing-read "Max height resolution (0 for unlimited): " '("0" "480" "720") nil nil)))
-    (setq quality-val (string-to-number quality-val))
-    (message "Opening %s with height≤%s with mpv..." (elfeed-entry-link entry) quality-val)
-    (when (< 0 quality-val)
-      (setq quality-arg (format "--ytdl-format=[height<=?%s]" quality-val)))
-    (start-process "elfeed-mpv" nil "mpv" quality-arg (elfeed-entry-link entry))))
-(global-set-key (kbd "C-c m") 'elfeed-play-with-mpv)
-
-(defun er-youtube ()
-  "Search YouTube with a query or region if any."
-  (interactive)
-  (browse-url
-   (concat
-    "http://www.youtube.com/results?search_query="
-    (url-hexify-string (if mark-active
-                           (buffer-substring (region-beginning) (region-end))
-                         (read-string "Search YouTube: "))))))
-(global-set-key (kbd "C-c y") #'er-youtube)
-
-;;###############
-;;Secure 3rd party download packages
-;;###############
-
-;;TODO
-;;https://glyph.twistedmatrix.com/2015/11/editor-malware.html
+  (set-frame-font "Terminus-12"))
+(global-set-key (kbd "<f12>") 'toogle-font-size)
 
 ;;###############
 ;;Melpa - packages
@@ -261,16 +230,6 @@
   :ensure t
   :config (global-hungry-delete-mode))
 
-;;Pré visualização de arquivos.
-(use-package peep-dired
-  :ensure t
-  :defer t
-  :bind (:map dired-mode-map
-	      ("P" . peep-dired))
-  :config
-  (setq peep-dired-cleanup-on-disable t)
-  (setq peep-dired-ignored-extensions '("mkv" "iso" "mp4")))
-
 ;;Verificação de sintaxe
 (use-package flycheck
   :ensure t
@@ -298,7 +257,94 @@
 (use-package google-translate
   :ensure t)
 
-(use-package google-maps
+;;Sytem crafters org-mode impuviments
+
+(defun dw/org-mode-setup ()
+  "Org-mode setup."
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1)
+  (setq evil-auto-indent nil))
+
+(use-package org
+  :ensure t
+  :hook (org-mode . dw/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾"
+        org-hide-emphasis-markers t))
+
+(use-package org-bullets
+  :ensure t
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+;; Replace list hyphen with dot
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                          (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(with-eval-after-load 'org-faces
+  ;; Increase the size of various headings
+  (set-face-attribute 'org-document-title nil :font "Cantarell" :weight 'bold :height 1.3)
+  (dolist (face '((org-level-1 . 1.2)
+		  (org-level-2 . 1.1)
+		  (org-level-3 . 1.05)
+		  (org-level-4 . 1.0)
+		  (org-level-5 . 1.1)
+		  (org-level-6 . 1.1)
+		  (org-level-7 . 1.1)
+		  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+;; Make sure org-indent face is available
+(require 'org-indent)
+
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+;;Selecionar usando shift no org-mode
+(setq org-support-shift-select t)
+
+;;Dependências para o Telega
+(use-package visual-fill-column
   :ensure t)
 
+(use-package rainbow-identifiers
+  :ensure t)
+
+;;Telegram dor Emacs
+(use-package telega
+  :ensure t
+  :load-path  "~/telega.el"
+  :commands (telega)
+  :defer t)
+(setq telega-server-libs-prefix "/usr")
+
+(use-package dired-hide-dotfiles
+  :ensure t
+  :bind ("C-." . dired-hide-dotfiles-mode))
+
 ;;; init.el ends here.
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(dired-hide-dotfiles telega rainbow-identifiers visual-fill-column visual-fill-colummn all-the-icons-install-fonts t: google-translate google-this all-the-icons-ibuffer all-the-icons-dired all-the-icons flycheck hungry-delete company-web company emmet-mode elfeed rainbow-delimiters doom-themes emojify erc-hl-nicks expand-region beacon which-key use-package)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
