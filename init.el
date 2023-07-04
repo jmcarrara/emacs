@@ -9,7 +9,8 @@
 ;;###############
 
 ;;Configura fonte
-(set-frame-font "FiraCode-10")
+;(set-frame-font "FiraCode-10")
+(set-face-attribute 'default nil :height 130)
 
 ;;Maximized startup
 (toggle-frame-maximized)
@@ -21,7 +22,7 @@
 (scroll-bar-mode -1)
 
 ;;Disable menubar
-(menu-bar-mode -1)
+;(menu-bar-mode -1)
 
 ;;Change yes or no to y or n
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -98,18 +99,13 @@
 (global-set-key (kbd "C-x 2") 'split-and-follow-horizontaly)
 
 (defun split-and-follow-verticaly ()
-    "O Cursor segue a janela dividida na vertical."
+  "O Cursor segue a janela dividida na vertical."
   (interactive)
   (split-window-right)
   (balance-windows)
   (other-window 1))
 (global-set-key (kbd "C-x 3") 'split-and-follow-verticaly)
 
-(defun toogle-font-size ()
-  "Alterna entre 2 tamanho de fontes pré determinados."
-  (interactive)
-  (set-frame-font "Terminus-12"))
-(global-set-key (kbd "<f12>") 'toogle-font-size)
 
 ;;###############
 ;;Melpa - packages
@@ -124,53 +120,52 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-
 ;;###############
 ;;Packages
 ;;###############
 
 ;;Commmands description
 (use-package which-key
-  :ensure t
-  :config
-  (which-key-mode 1))
+    :ensure t
+    :config
+    (which-key-mode 1))
 
 ;;Never lose your cursor again
 (use-package beacon
-  :ensure t
-  :config
-  (beacon-mode 1))
+    :ensure t
+    :config
+    (beacon-mode 1))
 
 ;;Expand region
 (use-package expand-region
-  :ensure t
-  :bind ("C-=" . er/expand-region))
+    :ensure t
+    :bind ("C-=" . er/expand-region))
 
 ;;Nicks coloridos no ERC
 (use-package erc-hl-nicks
-  :ensure t
-  :after erc
-  :config
-  (add-to-list 'erc-modules 'hl-nicks))
+    :ensure t
+    :after erc
+    :config
+    (add-to-list 'erc-modules 'hl-nicks))
 
 ;;Emojis em todo lugar
 (use-package emojify
-  :ensure t
-  :hook (after-init . global-emojify-mode))
+    :ensure t
+    :hook (after-init . global-emojify-mode))
 
 ;;Doom themes
 (use-package doom-themes
-  :ensure t
-  :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-one t))
+    :ensure t
+    :config
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+	  doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    (load-theme 'doom-one t))
 
 ;;Rainbow delimiters
 (use-package rainbow-delimiters
-  :ensure t
-  :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+    :ensure t
+    :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
 ;;HTML - Config
 (defun html-setup ()
@@ -178,86 +173,147 @@
   (defvar sgml-electric-tag-pair-mode))
 
 (use-package mhtml-mode
-  :hook (mhtml-mode . html-setup)
-  :config
- ;; (diminish 'sgml-electric-tag-pair-mode)
-  (setq-default sgml-basic-offset 2))
+    :hook (mhtml-mode . html-setup)
+    :config
+    ;; (diminish 'sgml-electric-tag-pair-mode)
+    (setq-default sgml-basic-offset 2))
 
 ;;CSS - Config
 (use-package css-mode
-  :mode ("\\.css\\'"))
+    :mode ("\\.css\\'"))
 
 ;;Rss - feeds
 (use-package elfeed
-  :ensure t)
+    :ensure t)
 
 (setq elfeed-feeds
       '("https://lukesmith.xyz/index.xml"
-        ))
+	))
 
 ;;Tag snippet
 (use-package emmet-mode
-  :ensure t
-  :config
-  (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
-  (add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
-  (setq emmet-move-cursor-between-quotes t)) ;; default nil
+    :ensure t
+    :config
+    (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
+    (add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
+    (setq emmet-move-cursor-between-quotes t)) ;; default nil
 
-;;Auto complete
-(use-package company
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook 'global-company-mode)
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 1)
-  (setq company-selection-wrap-around t)
-  (company-tng-mode)
-  (setq company-backends
-	'(company-capf
-	  company-files
-	  company-keywords
-	  company-web-html)))
+;;Instalação do SLIME
+(use-package slime
+    :ensure t)
+
+;;----------------------------------------------------------;;
+;; Configuração básica do SLIME
+;;----------------------------------------------------------;;
+
+;; Configuração do SLIME para 1 implementação Lisp:
+(setq inferior-lisp-program "sbcl")
+
+;; Configuração do SLIME para mais de 1 implementação Lisp:
+;(setq slime-lisp-implementations
+;      '((cmucl ("/opt/cmucl/bin/cmucl"))
+;        (sbcl ("/opt/sbcl/bin/sbcl"))))
+;(setq slime-default-lisp 'sbcl)
+
+;; Não altere aqui (só se souber o que está fazendo):
+(require 'slime)
+(require 'slime-autoloads)
+(setq slime-contribs '(slime-fancy slime-asdf slime-sprof slime-mdot-fu
+                       slime-compiler-notes-tree slime-hyperdoc
+                       slime-indentation slime-repl inferior-slime slime-autodoc))
+;;(setq slime-complete-symbol-function 'slime-fuzzy-complete-symbol)
+(setq slime-completion-at-point-functions 'slime-fuzzy-complete-symbol)
+(setq slime-net-coding-system 'utf-8-unix)
+(setq slime-startup-animation nil)
+(setq slime-auto-select-connection 'always)
+(setq slime-kill-without-query-p t)
+(setq slime-description-autofocus t)
+(setq slime-fuzzy-explanation "")
+(setq slime-asdf-collect-notes t)
+(setq slime-inhibit-pipelining nil)
+(setq slime-load-failed-fasl 'always)
+(setq slime-when-complete-filename-expand t)
+(setq slime-repl-history-remove-duplicates t)
+(setq slime-repl-history-trim-whitespaces t)
+(setq slime-export-symbol-representation-auto t)
+(setq slime-highlight-edits-mode t)
+(setq lisp-indent-function 'common-lisp-indent-function)
+(setq lisp-loop-indent-subclauses nil)
+(setq lisp-loop-indent-forms-like-keywords t)
+(setq lisp-lambda-list-keyword-parameter-alignment t)
+
+;; Inicia SLIME ao abrir um arquivo .lisp:
+;(add-hook 'slime-mode-hook
+;          (lambda ()
+;            (unless (slime-connected-p)
+;              (save-excursion (slime)))))
+
+(use-package company-quickhelp
+    :ensure t)
+
+;;----------------------------------------------------------;;
+;; Configuração básica do company
+;;----------------------------------------------------------;;
+
+;; Não altere aqui (só se souber o que está fazendo):
+(require 'company)
+
+(company-quickhelp-mode 1)
+(setq company-quickhelp-delay 0.7
+      company-tooltip-align-annotations t
+      company-idle-delay 0
+      company-minimum-prefix-length 1)
+
+(global-company-mode)
+(push 'slime-company slime-contribs)
+
+(define-key company-active-map (kbd "<up>") 'company-select-previous)
+(define-key company-active-map (kbd "<down>") 'company-select-next)
+(define-key company-active-map (kbd "\C-n") 'company-select-next)
+(define-key company-active-map (kbd "\C-p") 'company-select-previous)
+(define-key company-active-map (kbd "\C-d") 'company-show-doc-buffer)
+(define-key company-active-map (kbd "M-.") 'company-show-location)
 
 ;;Auto complete HTML
 (use-package company-web
-  :ensure t
-  :config
-  (global-set-key (kbd "C-'") 'company-web-html)
-  (setq company-tooltip-align-annotations 't))
+    :ensure t
+    :config
+    (global-set-key (kbd "C-'") 'company-web-html)
+    (setq company-tooltip-align-annotations 't))
 
 ;;Apaga caracteres em branco até o próximo caractere.
 (use-package hungry-delete
-  :ensure t
-  :config (global-hungry-delete-mode))
+    :ensure t
+    :config (global-hungry-delete-mode))
 
 ;;Verificação de sintaxe
 (use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
+    :ensure t
+    :init (global-flycheck-mode))
 
 ;;Icones no dired.
 (use-package all-the-icons
-  :ensure t
-  :config (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+    :ensure t
+    :config (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 
 (use-package all-the-icons-dired
-  :ensure t)
+    :ensure t)
 
 ;;Icones no Ibuffer
 (use-package all-the-icons-ibuffer
-  :ensure t
-  :hook (ibuffer-mode . all-the-icons-ibuffer-mode)
-  :config (setq  all-the-icons-ibuffer-human-readable-size t))
+    :ensure t
+    :hook (ibuffer-mode . all-the-icons-ibuffer-mode)
+    :config (setq  all-the-icons-ibuffer-human-readable-size t))
 
 ;;Pesquisas no google
 (use-package google-this
-  :ensure t
-  :config (google-this-mode 1))
+    :ensure t
+    :config (google-this-mode 1))
 
 (use-package google-translate
-  :ensure t)
+    :ensure t)
 
-;;Sytem crafters org-mode impuviments
+;;Sytem crafters org-mode improviments
 
 (defun dw/org-mode-setup ()
   "Org-mode setup."
@@ -265,21 +321,22 @@
   (variable-pitch-mode 1)
   (auto-fill-mode 0)
   (visual-line-mode 1)
-  (setq evil-auto-indent nil))
+  (olivetti-mode 1))
+  ;;(setq evil-auto-indent nil))
 
 (use-package org
-  :ensure t
-  :hook (org-mode . dw/org-mode-setup)
-  :config
-  (setq org-ellipsis " ▾"
-        org-hide-emphasis-markers t))
+    :ensure t
+    :hook (org-mode . dw/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾"
+	  org-hide-emphasis-markers t))
 
 (use-package org-bullets
-  :ensure t
-  :after org
-  :hook (org-mode . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+    :ensure t
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 ;; Replace list hyphen with dot
 (font-lock-add-keywords 'org-mode
@@ -314,24 +371,76 @@
 ;;Selecionar usando shift no org-mode
 (setq org-support-shift-select t)
 
-;;Dependências para o Telega
-(use-package visual-fill-column
-  :ensure t)
-
-(use-package rainbow-identifiers
-  :ensure t)
-
-;;Telegram dor Emacs
-(use-package telega
-  :ensure t
-  :load-path  "~/telega.el"
-  :commands (telega)
-  :defer t)
-(setq telega-server-libs-prefix "/usr")
-
 (use-package dired-hide-dotfiles
-  :ensure t
-  :bind ("C-." . dired-hide-dotfiles-mode))
+    :ensure t
+    :after dired
+    :hook (dired-mode . dired-hide-dotfiles-mode)
+    :bind ("C-." . dired-hide-dotfiles-mode))
+
+;;Org export twitter bootstrap
+(use-package ox-twbs
+    :ensure t)
+
+(setq org-html-validation-link nil)
+
+;;prettify checkbox list org-mode
+(add-hook 'org-mode-hook (lambda ()
+			   "Beautify Org Checkbox Symbol"
+			   (push '("[ ]" .  "☐") prettify-symbols-alist)
+			   (push '("[X]" . "☑" ) prettify-symbols-alist)
+			   (push '("[-]" . "❍" ) prettify-symbols-alist)
+			   (prettify-symbols-mode)))
+
+;;Strike through on checkbox list
+(defface org-checkbox-done-text
+    '((t (:foreground "#71696A" :strike-through t)))
+  "Face for the text part of a checked 'org-mode' checkbox.")
+
+(font-lock-add-keywords
+ 'org-mode
+ `(("^[ \t]*\\(?:[-+*]\\|[0-9]+[).]\\)[ \t]+\\(\\(?:\\[@\\(?:start:\\)?[0-9]+\\][ \t]*\\)?\\[\\(?:X\\|\\([0-9]+\\)/\\2\\)\\][^\n]*\n\\)"
+    1 'org-checkbox-done-text prepend))
+ 'append)
+
+;;Configurar font fira code
+(use-package fira-code-mode
+    :ensure t
+    :custom (fira-code-mode-disabled-ligatures '("[]" "#{" "#(" "#_" "#_(" "x")) ;; List of ligatures to turn off
+    :hook prog-mode)
+
+;;Transmission
+(use-package transmission
+    :ensure t)
+
+;;Trocar de janela de forma mais fácil.
+(use-package switch-window
+    :ensure t
+    :config
+    (setq switch-window-shortcut-style 'qwerty)
+    (setq switch-window-minibuffer-shortcut ?z))
+
+(global-set-key (kbd "C-x o") 'switch-window)
+
+;;Olivetti mode
+(use-package olivetti
+    :ensure t)
+
+;;Configurando corretor ortográfico
+(setq ispell-local-dictionary-alist
+      '(("brazilian"
+	 "[A-ZÁÉÍÓÚÀÈÌÒÙÃÕÇÜÂÊÔa-záéíóúàèìòùãõçüâêôö]"
+         "[^A-ZÁÉÍÓÚÀÈÌÒÙÃÕÇÜÂÊÔa-záéíóúàèìòùãõçüâêôö]"
+         "['-]"
+         nil
+         ("-d" "brazilian")
+         nil
+         utf-8)))
+
+(set-default 'ispell-local-dictionary "brazilian")
+
+;;PHP mode
+(use-package php-mode
+    :ensure t)
 
 ;;; init.el ends here.
 
@@ -341,7 +450,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(dired-hide-dotfiles telega rainbow-identifiers visual-fill-column visual-fill-colummn all-the-icons-install-fonts t: google-translate google-this all-the-icons-ibuffer all-the-icons-dired all-the-icons flycheck hungry-delete company-web company emmet-mode elfeed rainbow-delimiters doom-themes emojify erc-hl-nicks expand-region beacon which-key use-package)))
+   '(php-mode ob-php org-mode org-plus-contrib ox-twbs olivetti switch-window company-quickhelp slime-company slime transmission fira-code-mode dired-hide-dotfiles org-bullets google-translate google-this all-the-icons-ibuffer all-the-icons-dired all-the-icons flycheck hungry-delete company-web company emmet-mode elfeed rainbow-delimiters doom-themes emojify erc-hl-nicks expand-region beacon which-key use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
