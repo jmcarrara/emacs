@@ -10,7 +10,7 @@
 
 ;;Configura fonte
 ;(set-frame-font "FiraCode-10")
-(set-face-attribute 'default nil :height 130)
+(set-face-attribute 'default nil :height 150)
 
 ;;Maximized startup
 (toggle-frame-maximized)
@@ -28,7 +28,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;;Show cursor highlighted in prog mode
-(add-hook 'prog-mode-hook 'hl-line-mode)
+;(add-hook 'prog-mode-hook 'hl-line-mode)
 
 ;;Line numbers when in prog mode
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -84,6 +84,12 @@
 (defvar erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE" "AWAY")) ;Exclue do rastreamento esses tipos de mesagens do modeline.
 (defvar erc-track-exclude-server-buffer t) ;;Exclue o rastreamento do buffer de mensagens do servidor conectado do modeline.)
 (defvar erc-hide-list '("JOIN" "NICK" "PART" "QUIT" "MODE" "AWAY")) ;;Esconde esses tipos de mensagem no buffer.)
+
+;;Scrolling conservatively no ERC
+(add-hook 'rcirc-mode-hook
+          (lambda ()
+            (set (make-local-variable 'scroll-conservatively)
+                 8192)))
 
 
 ;;###############
@@ -154,13 +160,22 @@
     :hook (after-init . global-emojify-mode))
 
 ;;Doom themes
-(use-package doom-themes
-    :ensure t
-    :config
-    ;; Global settings (defaults)
-    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-	  doom-themes-enable-italic t) ; if nil, italics is universally disabled
-    (load-theme 'doom-one t))
+;(use-package doom-themes
+;    :ensure t
+;    :config
+;    ;; Global settings (defaults)
+;    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+;	  doom-themes-enable-italic t) ; if nil, italics is universally disabled
+;    (load-theme 'doom-one t))
+
+;;catppuccin-theme
+;(use-package catppuccin-theme
+;    :ensure t)
+;    (load-theme 'catppuccin :no-confirm)
+;    (setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
+;    (catppuccin-reload)
+
+(load-theme 'modus-operandi)
 
 ;;Rainbow delimiters
 (use-package rainbow-delimiters
@@ -255,6 +270,9 @@
 ;; Configuração básica do company
 ;;----------------------------------------------------------;;
 
+(use-package slime-company
+    :ensure t)
+
 ;; Não altere aqui (só se souber o que está fazendo):
 (require 'company)
 
@@ -309,6 +327,7 @@
 (use-package google-this
     :ensure t
     :config (google-this-mode 1))
+;;    (setq google-translate-backend-method 'wget))
 
 (use-package google-translate
     :ensure t)
@@ -366,7 +385,8 @@
 (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
 (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil :inherit 'fixed-pitch))
 
 ;;Selecionar usando shift no org-mode
 (setq org-support-shift-select t)
@@ -442,6 +462,76 @@
 (use-package php-mode
     :ensure t)
 
+;;Inserção de caracteres em latim
+;;(global-set-key (kbd "C-x 8 a") (lambda () (interactive) (insert "α")))
+;;Minúsculas Breve
+;;ă
+(global-set-key (kbd "M-s-a") (lambda()
+			      (interactive) (insert-char #x103)))
+;;ĕ
+(global-set-key (kbd "M-s-e") (lambda()
+			      (interactive) (insert-char #x115)))
+;;ĭ
+(global-set-key (kbd "M-s-i") (lambda()
+			      (interactive) (insert-char #x12D)))
+;;ŏ
+(global-set-key (kbd "M-s-o") (lambda()
+			      (interactive) (insert-char #x14F)))
+;;ŭ
+(global-set-key (kbd "M-s-u") (lambda()
+			      (interactive) (insert-char #x16D)))
+;;Minúsculas Macron
+;;ā
+(global-set-key (kbd "C-s-a") (lambda()
+			      (interactive) (insert-char #x101)))
+;;ē
+(global-set-key (kbd "C-s-e") (lambda()
+			      (interactive) (insert-char #x113)))
+;;ī
+(global-set-key (kbd "C-s-i") (lambda()
+			      (interactive) (insert-char #x12B)))
+;;ō
+(global-set-key (kbd "C-s-o") (lambda()
+			      (interactive) (insert-char #x14D)))
+;;ū
+(global-set-key (kbd "C-s-u") (lambda()
+				(interactive) (insert-char #x16B)))
+
+
+;;Maiúsculas Breve
+;;Ă
+(global-set-key (kbd "M-s-A") (lambda()
+				(interactive) (insert-char #x102)))
+;;Ĕ
+(global-set-key (kbd "M-s-E") (lambda()
+				(interactive) (insert-char #x114)))
+;;
+(global-set-key (kbd "M-s-I") (lambda()
+				(interactive) (insert-char #x12C)))
+;;Ŏ
+(global-set-key (kbd "M-s-O") (lambda()
+				(interactive) (insert-char #x14E)))
+;;Ŭ
+(global-set-key (kbd "M-s-U") (lambda()
+				(interactive) (insert-char #x16C)))
+
+;;Maiúsculas Macron
+;;Ā
+(global-set-key (kbd "C-s-A") (lambda()
+				(interactive) (insert-char #x100)))
+;;Ē
+(global-set-key (kbd "C-s-E") (lambda()
+			      (interactive) (insert-char #x112)))
+;;Ĭ
+(global-set-key (kbd "C-s-I") (lambda()
+			      (interactive) (insert-char #x12C)))
+;;Ō
+(global-set-key (kbd "C-s-O") (lambda()
+			      (interactive) (insert-char #x14C)))
+;;Ū
+(global-set-key (kbd "C-s-U") (lambda()
+			      (interactive) (insert-char #x16A)))
+
 ;;; init.el ends here.
 
 (custom-set-variables
@@ -449,8 +539,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("f5e666fba0ded6ae9be004314ecf5f7feb605cdb84711b5c5ffd81acfb831183" default))
  '(package-selected-packages
-   '(php-mode ob-php org-mode org-plus-contrib ox-twbs olivetti switch-window company-quickhelp slime-company slime transmission fira-code-mode dired-hide-dotfiles org-bullets google-translate google-this all-the-icons-ibuffer all-the-icons-dired all-the-icons flycheck hungry-delete company-web company emmet-mode elfeed rainbow-delimiters doom-themes emojify erc-hl-nicks expand-region beacon which-key use-package)))
+   '(catppuccin-theme php-mode ob-php org-mode org-plus-contrib ox-twbs olivetti switch-window company-quickhelp slime-company slime transmission fira-code-mode dired-hide-dotfiles org-bullets google-translate google-this all-the-icons-ibuffer all-the-icons-dired all-the-icons flycheck hungry-delete company-web company emmet-mode elfeed rainbow-delimiters doom-themes emojify erc-hl-nicks expand-region beacon which-key use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
